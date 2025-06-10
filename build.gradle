@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'application'
+    // Shadow plugin creates a fat/uber JAR with all dependencies included
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.brunorozendo.mcp'
+version = '0.7.1' // Incremented version for dependency fix
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // The core MCP SDK for Java
+    implementation 'io.modelcontextprotocol.sdk:mcp:0.10.0'
+
+    // A library for generating text diffs, using the correct Maven coordinates
+    implementation 'io.github.java-diff-utils:java-diff-utils:4.12'
+
+    // Jackson for object mapping, provided by the MCP SDK but good to be aware of
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+    mainClass = 'com.brunorozendo.mcp.filesystem.FilesystemServer'
+}
+
+// Configure the shadowJar task to be the default jar
+shadowJar {
+    archiveBaseName = 'filesystem-mcp-server'
+    archiveClassifier = 'all'
+    archiveVersion = '' // Omit version from the final jar name
+}
+
+// Ensure the default jar task builds the fat jar
+jar {
+    enabled = false
+}
+tasks.build.dependsOn(shadowJar)
+
