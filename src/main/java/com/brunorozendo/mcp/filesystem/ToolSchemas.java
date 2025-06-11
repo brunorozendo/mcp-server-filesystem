@@ -85,9 +85,9 @@ public final class ToolSchemas {
 
     public static final McpSchema.Tool SEARCH_FILES = new McpSchema.Tool(
         "search_files",
-        "Recursively search for files and directories matching a pattern. " +
-        "Searches through all subdirectories from the starting path. The search " +
-        "is case-insensitive and matches partial names. Returns full paths to all " +
+        "Recursively search for files and directories matching a glob pattern. " +
+        "Searches through all subdirectories from the starting path. Supports glob patterns " +
+        "like '*.java' or '*.{java,xml}'. Returns full paths to all " +
         "matching items. Great for finding files when you don't know their exact location. " +
         "Only searches within allowed directories.",
         createSearchSchema()

@@ -190,6 +190,9 @@ public class FileTools {
 
             Path startPath = pathValidator.validate(pathStr);
 
+            // Create a PathMatcher for the search pattern
+            PathMatcher patternMatcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+
             List<PathMatcher> excludeMatchers = excludePatterns.stream()
                 .map(p -> FileSystems.getDefault().getPathMatcher("glob:" + p))
                 .collect(Collectors.toList());
@@ -202,7 +205,7 @@ public class FileTools {
                     if (excludeMatchers.stream().anyMatch(m -> m.matches(relativeDir))) {
                         return FileVisitResult.SKIP_SUBTREE;
                     }
-                    if (dir.getFileName().toString().toLowerCase().contains(pattern.toLowerCase())) {
+                    if (patternMatcher.matches(dir.getFileName())) {
                         results.add(dir.toString());
                     }
                     return FileVisitResult.CONTINUE;
@@ -214,7 +217,7 @@ public class FileTools {
                      if (excludeMatchers.stream().anyMatch(m -> m.matches(relativeFile))) {
                         return FileVisitResult.CONTINUE;
                     }
-                    if (file.getFileName().toString().toLowerCase().contains(pattern.toLowerCase())) {
+                    if (patternMatcher.matches(file.getFileName())) {
                         results.add(file.toString());
                     }
                     return FileVisitResult.CONTINUE;

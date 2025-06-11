@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <!-- Configure MCP-specific loggers -->
+    <logger name="io.modelcontextprotocol" level="INFO" />
+    <logger name="com.brunorozendo.mcp" level="INFO" />
+
+    <!-- Configure transport loggers -->
+    <logger name="org.eclipse.jetty" level="WARN" />
+</configuration>
