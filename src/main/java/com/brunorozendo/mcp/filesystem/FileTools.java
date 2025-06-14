@@ -5,7 +5,6 @@ import com.github.difflib.DiffUtils;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
-import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
@@ -87,8 +86,17 @@ public class FileTools {
     }
 
     public CallToolResult readMultipleFiles(McpSyncServerExchange exchange, Map<String, Object> args) {
-        return handleTool(exchange, args, (ex, a) -> {
-            List<String> paths = (List<String>) a.get("paths");
+        return handleTool(exchange, args, (ex, toolArgs) -> {
+            Object pathsObject = toolArgs.get("paths");
+            List<String> paths = List.of();
+
+            if (pathsObject instanceof List<?> pathList) {
+                paths = pathList.stream()
+                        .filter(String.class::isInstance)
+                        .map(String.class::cast)
+                        .toList();
+            }
+
             StringBuilder results = new StringBuilder();
             for (String pathStr : paths) {
                 try {
@@ -186,7 +194,7 @@ public class FileTools {
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
             String pattern = (String) a.get("pattern");
-            List<String> excludePatterns = (List<String>) a.getOrDefault("excludePatterns", Collections.emptyList());
+            List<String> excludePatterns = getOptionalStringList(a);
 
             Path startPath = pathValidator.validate(pathStr);
 
@@ -194,8 +202,8 @@ public class FileTools {
             PathMatcher patternMatcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
 
             List<PathMatcher> excludeMatchers = excludePatterns.stream()
-                .map(p -> FileSystems.getDefault().getPathMatcher("glob:" + p))
-                .collect(Collectors.toList());
+                    .map(p -> FileSystems.getDefault().getPathMatcher("glob:" + p))
+                    .toList();
 
             List<String> results = new ArrayList<>();
             Files.walkFileTree(startPath, new SimpleFileVisitor<>() {
@@ -214,7 +222,7 @@ public class FileTools {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     Path relativeFile = startPath.relativize(file);
-                     if (excludeMatchers.stream().anyMatch(m -> m.matches(relativeFile))) {
+                    if (excludeMatchers.stream().anyMatch(m -> m.matches(relativeFile))) {
                         return FileVisitResult.CONTINUE;
                     }
                     if (patternMatcher.matches(file.getFileName())) {
@@ -227,6 +235,18 @@ public class FileTools {
             String output = results.isEmpty() ? "No matches found" : String.join("\n", results);
             return new CallToolResult(output, false);
         });
+    }
+
+    private List<String> getOptionalStringList(Map<String, Object> args) {
+        Object value = args.get("excludePatterns");
+        if (value instanceof List<?> list) {
+            // This is a common pattern for deserialized data where generic types are erased.
+            // We are assuming the list contains strings as per the tool's contract.
+            @SuppressWarnings("unchecked")
+            List<String> stringList = (List<String>) list;
+            return stringList;
+        }
+        return Collections.emptyList();
     }
 
     public CallToolResult directoryTree(McpSyncServerExchange exchange, Map<String, Object> args) {
@@ -264,17 +284,26 @@ public class FileTools {
 
     public CallToolResult editFile(McpSyncServerExchange exchange, Map<String, Object> args) {
         return handleTool(exchange, args, (ex, a) -> {
-            String pathStr = (String) a.get("path");
-            List<Map<String, String>> edits = (List<Map<String, String>>) a.get("edits");
-            boolean dryRun = (Boolean) a.getOrDefault("dryRun", false);
+            // Define local records for structured, type-safe argument handling.
+            record Edit(String oldText, String newText) {
+            }
+            record EditFileArgs(String path, List<Edit> edits, Boolean dryRun) {
+                boolean isDryRun() {
+                    // Replicates the behavior of Map.getOrDefault("dryRun", false) for a nullable Boolean.
+                    return dryRun != null && dryRun;
+                }
+            }
 
-            Path validPath = pathValidator.validate(pathStr);
+            // Use ObjectMapper to convert the map to a strongly-typed object, avoiding unsafe casts.
+            EditFileArgs editArgs = objectMapper.convertValue(a, EditFileArgs.class);
+
+            Path validPath = pathValidator.validate(editArgs.path());
             String originalContent = Files.readString(validPath);
             String modifiedContent = originalContent;
 
-            for (Map<String, String> edit : edits) {
-                String oldText = edit.get("oldText").replace("\r\n", "\n");
-                String newText = edit.get("newText").replace("\r\n", "\n");
+            for (Edit edit : editArgs.edits()) {
+                String oldText = edit.oldText().replace("\r\n", "\n");
+                String newText = edit.newText().replace("\r\n", "\n");
                 if (!modifiedContent.contains(oldText)) {
                     throw new IOException("Could not find exact match for edit:\n" + oldText);
                 }
@@ -286,15 +315,15 @@ public class FileTools {
 
             Patch<String> patch = DiffUtils.diff(originalLines, modifiedLines);
             List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(
-                validPath.toString(),
-                validPath.toString(),
-                originalLines, patch, 3
+                    validPath.toString(),
+                    validPath.toString(),
+                    originalLines, patch, 3
             );
 
             String diffString = String.join("\n", unifiedDiff);
             String resultMessage = "```diff\n" + diffString + "\n```";
 
-            if (!dryRun) {
+            if (!editArgs.isDryRun()) {
                 Files.writeString(validPath, modifiedContent);
             }
 
