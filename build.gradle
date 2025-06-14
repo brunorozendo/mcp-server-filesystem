@@ -3,6 +3,8 @@ plugins {
     id 'application'
     // Shadow plugin creates a fat/uber JAR with all dependencies included
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'groovy' // For Spock tests
+    id 'jacoco' // For code coverage
 }
 
 group = 'com.brunorozendo.mcp'
@@ -21,6 +23,18 @@ dependencies {
 
     // Jackson for object mapping, provided by the MCP SDK but good to be aware of
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
+
+
+    // Spock and Groovy for testing
+    testImplementation platform('org.spockframework:spock-bom:2.4-M6-groovy-4.0')
+    testImplementation 'org.spockframework:spock-core'
+
+    // Spock reports
+    testImplementation "com.athaydes:spock-reports:2.5.1-groovy-4.0"
+
+    // Spring Boot Testing
+
 }
 
 java {
@@ -44,4 +58,40 @@ jar {
     enabled = false
 }
 tasks.build.dependsOn(shadowJar)
+
+
+test{
+    useJUnitPlatform()
+    testLogging {
+        //events "FAILED","PASSED","SKIPPED","STANDARD_ERROR","STANDARD_OUT","STARTED"
+        events "FAILED","PASSED","SKIPPED"
+    }
+    finalizedBy jacocoTestReport // Generate report after tests run
+}
+
+
+// JaCoCo configuration
+jacoco {
+    toolVersion = "0.8.11" // Use the latest version of JaCoCo
+}
+
+jacocoTestReport {
+    dependsOn test // Tests are required to run before generating the report
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco')
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.5 // Minimum code coverage of 50%
+            }
+        }
+    }
+}
 
