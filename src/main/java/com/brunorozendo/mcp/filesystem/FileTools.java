@@ -402,7 +402,7 @@ public class FileTools {
                     if (excludeMatchers.stream().anyMatch(m -> m.matches(relativeDir))) {
                         return FileVisitResult.SKIP_SUBTREE;
                     }
-                    if (patternMatcher.matches(dir.getFileName())) {
+                    if (patternMatcher.matches(relativeDir) || patternMatcher.matches(dir.getFileName())) {
                         results.add(dir.toString());
                     }
                     return FileVisitResult.CONTINUE;
@@ -414,7 +414,7 @@ public class FileTools {
                     if (excludeMatchers.stream().anyMatch(m -> m.matches(relativeFile))) {
                         return FileVisitResult.CONTINUE;
                     }
-                    if (patternMatcher.matches(file.getFileName())) {
+                    if (patternMatcher.matches(relativeFile) || patternMatcher.matches(file.getFileName())) {
                         results.add(file.toString());
                     }
                     return FileVisitResult.CONTINUE;
