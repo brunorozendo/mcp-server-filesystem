@@ -17,6 +17,10 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,8 +32,157 @@ public class FileTools {
     private final PathValidator pathValidator;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // Map to track resources by URI
+    private final Map<String, Path> resourceMap = new ConcurrentHashMap<>();
+
+    // WatchService for file system events
+    private WatchService watchService;
+
+    // Map to track watch keys and their directories
+    private final Map<WatchKey, Path> watchKeyMap = new ConcurrentHashMap<>();
+
+    // Executor for background file watching
+    private final ExecutorService watchExecutor = Executors.newSingleThreadExecutor();
+
+    // Resource change callback
+    private Consumer<String> resourceChangeCallback;
+
     public FileTools(List<String> allowedDirs) {
         this.pathValidator = new PathValidator(allowedDirs);
+
+        try {
+            // Initialize the WatchService
+            this.watchService = FileSystems.getDefault().newWatchService();
+
+            // Start the file watching thread
+            startFileWatcher();
+
+            // Register all allowed directories for watching
+            for (String dir : allowedDirs) {
+                Path path = Paths.get(dir);
+                registerDirectoryForWatching(path);
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to initialize file watching: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sets the callback to be invoked when a resource changes.
+     * 
+     * @param callback The callback function that accepts a resource URI
+     */
+    public void setResourceChangeCallback(Consumer<String> callback) {
+        this.resourceChangeCallback = callback;
+    }
+
+    /**
+     * Registers a directory and all its subdirectories for file watching.
+     * 
+     * @param directory The directory to watch
+     * @throws IOException If an I/O error occurs
+     */
+    private void registerDirectoryForWatching(Path directory) throws IOException {
+        if (!Files.isDirectory(directory)) {
+            return;
+        }
+
+        // Register the directory itself
+        WatchKey key = directory.register(watchService, 
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_DELETE,
+                StandardWatchEventKinds.ENTRY_MODIFY);
+        watchKeyMap.put(key, directory);
+
+        // Register all subdirectories recursively
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+            for (Path path : stream) {
+                if (Files.isDirectory(path)) {
+                    registerDirectoryForWatching(path);
+                }
+            }
+        }
+    }
+
+    /**
+     * Starts a background thread to watch for file system events.
+     */
+    private void startFileWatcher() {
+        watchExecutor.submit(() -> {
+            try {
+                while (true) {
+                    WatchKey key;
+                    try {
+                        // Wait for a key to be available
+                        key = watchService.take();
+                    } catch (InterruptedException e) {
+                        return;
+                    }
+
+                    Path dir = watchKeyMap.get(key);
+                    if (dir == null) {
+                        continue;
+                    }
+
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        WatchEvent.Kind<?> kind = event.kind();
+
+                        // Skip OVERFLOW events
+                        if (kind == StandardWatchEventKinds.OVERFLOW) {
+                            continue;
+                        }
+
+                        // Get the filename from the event
+                        @SuppressWarnings("unchecked")
+                        WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
+                        Path filename = pathEvent.context();
+                        Path fullPath = dir.resolve(filename);
+
+                        // Handle the event based on its kind
+                        handleFileEvent(kind, fullPath);
+
+                        // If a new directory is created, register it for watching
+                        if (kind == StandardWatchEventKinds.ENTRY_CREATE && Files.isDirectory(fullPath)) {
+                            registerDirectoryForWatching(fullPath);
+                        }
+                    }
+
+                    // Reset the key to receive further events
+                    boolean valid = key.reset();
+                    if (!valid) {
+                        watchKeyMap.remove(key);
+                        if (watchKeyMap.isEmpty()) {
+                            break;
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Error in file watcher: " + e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Handles a file system event by updating the resource map and notifying subscribers.
+     * 
+     * @param kind The kind of event
+     * @param path The path that was affected
+     */
+    private void handleFileEvent(WatchEvent.Kind<?> kind, Path path) {
+        // Convert the path to a URI
+        String uri = "file://" + path.toAbsolutePath().normalize().toString();
+
+        // Update the resource map based on the event kind
+        if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+            resourceMap.put(uri, path);
+        } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+            resourceMap.remove(uri);
+        }
+
+        // Notify subscribers if a callback is registered
+        if (resourceChangeCallback != null) {
+            resourceChangeCallback.accept(uri);
+        }
     }
 
     private CallToolResult handleTool(McpSyncServerExchange exchange, Map<String, Object> args, ToolLogic logic) {
@@ -45,7 +198,7 @@ public class FileTools {
         CallToolResult execute(McpSyncServerExchange exchange, Map<String, Object> args) throws Exception;
     }
 
-    // --- NEW METHOD FOR HANDLING RESOURCES ---
+    // --- METHOD FOR HANDLING RESOURCES ---
     public ReadResourceResult readResource(McpSyncServerExchange exchange, ReadResourceRequest request) {
         try {
             String uri = request.uri();
@@ -65,6 +218,9 @@ public class FileTools {
                 mimeType = "application/octet-stream";
             }
 
+            // Add the resource to our tracking map
+            resourceMap.put(uri, validPath);
+
             TextResourceContents resourceContents = new TextResourceContents(uri, mimeType, content);
             return new ReadResourceResult(List.of(resourceContents));
         } catch (Exception e) {
@@ -72,6 +228,15 @@ public class FileTools {
             // For simplicity here, we re-throw, and the server will catch it.
             throw new RuntimeException("Failed to read resource: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Gets a list of all currently tracked resource URIs.
+     * 
+     * @return A list of resource URIs
+     */
+    public List<String> getTrackedResources() {
+        return new ArrayList<>(resourceMap.keySet());
     }
 
     // --- EXISTING TOOL IMPLEMENTATIONS ---
@@ -118,6 +283,14 @@ public class FileTools {
             String content = (String) a.get("content");
             Path validPath = pathValidator.validate(pathStr);
             Files.writeString(validPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+            // Add to resource map and notify subscribers
+            String uri = "file://" + validPath.toAbsolutePath().normalize().toString();
+            resourceMap.put(uri, validPath);
+            if (resourceChangeCallback != null) {
+                resourceChangeCallback.accept(uri);
+            }
+
             return new CallToolResult("Successfully wrote to " + pathStr, false);
         });
     }
@@ -150,7 +323,23 @@ public class FileTools {
             String destStr = (String) a.get("destination");
             Path validSource = pathValidator.validate(sourceStr);
             Path validDest = pathValidator.validate(destStr);
+
+            // Create URIs for source and destination
+            String sourceUri = "file://" + validSource.toAbsolutePath().normalize().toString();
+            String destUri = "file://" + validDest.toAbsolutePath().normalize().toString();
+
+            // Move the file
             Files.move(validSource, validDest);
+
+            // Update resource map and notify subscribers
+            resourceMap.remove(sourceUri);
+            resourceMap.put(destUri, validDest);
+
+            if (resourceChangeCallback != null) {
+                resourceChangeCallback.accept(sourceUri); // Notify about the source being removed
+                resourceChangeCallback.accept(destUri);   // Notify about the destination being added
+            }
+
             return new CallToolResult("Successfully moved " + sourceStr + " to " + destStr, false);
         });
     }
@@ -325,6 +514,14 @@ public class FileTools {
 
             if (!editArgs.isDryRun()) {
                 Files.writeString(validPath, modifiedContent);
+
+                // Update resource map and notify subscribers
+                String uri = "file://" + validPath.toAbsolutePath().normalize().toString();
+                resourceMap.put(uri, validPath);
+
+                if (resourceChangeCallback != null) {
+                    resourceChangeCallback.accept(uri);
+                }
             }
 
             return new CallToolResult(resultMessage, false);

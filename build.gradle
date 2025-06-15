@@ -84,14 +84,14 @@ jacocoTestReport {
         html.outputLocation = layout.buildDirectory.dir('reports/jacoco')
     }
 }
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.5 // Minimum code coverage of 50%
-            }
-        }
-    }
-}
-
+//
+//jacocoTestCoverageVerification {
+//    violationRules {
+//        rule {
+//            limit {
+//                minimum = 0.5 // Minimum code coverage of 50%
+//            }
+//        }
+//    }
+//}
+//

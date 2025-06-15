@@ -45,10 +45,10 @@ public class FilesystemServer {
         McpServer.sync(transportProvider)
             .serverInfo("java-secure-filesystem-server", "0.7.1")
             // Announce that we support both tools AND resources.
-            // The booleans indicate we don't support dynamic changes or subscriptions.
+            // The booleans indicate we support dynamic changes and subscriptions.
             .capabilities(McpSchema.ServerCapabilities.builder()
                 .tools(false)
-                .resources(false, false)
+                .resources(true, true)
                 .build())
             // Register the resource handler
             .resources(resourceSpec)
