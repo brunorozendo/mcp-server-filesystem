@@ -1,14 +1,19 @@
 plugins {
     id 'java'
     id 'application'
-    // Shadow plugin creates a fat/uber JAR with all dependencies included
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'groovy' // For Spock tests
+    id 'groovy'
     id 'jacoco' // For code coverage
+    id 'org.graalvm.buildtools.native' version '0.10.6'
 }
 
-group = 'com.brunorozendo.mcp'
+group = 'com.brunorozendo'
 version = '0.7.1' // Incremented version for dependency fix
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 repositories {
     mavenCentral()
@@ -22,7 +27,7 @@ dependencies {
     implementation 'io.github.java-diff-utils:java-diff-utils:4.12'
 
     // Jackson for object mapping, provided by the MCP SDK but good to be aware of
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.1'
 
 
 
@@ -32,32 +37,28 @@ dependencies {
 
     // Spock reports
     testImplementation "com.athaydes:spock-reports:2.5.1-groovy-4.0"
-
-    // Spring Boot Testing
-
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 application {
     mainClass = 'com.brunorozendo.mcp.filesystem.FilesystemServer'
 }
 
-// Configure the shadowJar task to be the default jar
-shadowJar {
-    archiveBaseName = 'filesystem-mcp-server'
-    archiveClassifier = 'all'
-    archiveVersion = '' // Omit version from the final jar name
-}
 
-// Ensure the default jar task builds the fat jar
+// Create a fat jar for easier distribution
 jar {
-    enabled = false
+    manifest {
+        attributes(
+                'Main-Class': 'com.brunorozendo.mcp.filesystem.FilesystemServer'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    // Exclude signature files to avoid security exceptions
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
 }
-tasks.build.dependsOn(shadowJar)
 
 
 test{
@@ -69,29 +70,53 @@ test{
     finalizedBy jacocoTestReport // Generate report after tests run
 }
 
-
-// JaCoCo configuration
-jacoco {
-    toolVersion = "0.8.11" // Use the latest version of JaCoCo
-}
-
 jacocoTestReport {
-    dependsOn test // Tests are required to run before generating the report
     reports {
         xml.required = true
-        csv.required = false
         html.required = true
-        html.outputLocation = layout.buildDirectory.dir('reports/jacoco')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    // Add any exclusions here if needed
+            ])
+        }))
     }
 }
-//
-//jacocoTestCoverageVerification {
-//    violationRules {
-//        rule {
-//            limit {
-//                minimum = 0.5 // Minimum code coverage of 50%
-//            }
-//        }
-//    }
-//}
-//
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80 // 80% coverage required
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+
+graalvmNative {
+    toolchainDetection = true
+    binaries {
+        main {
+            imageName = 'mcp-server-filesystem'
+            mainClass = application.mainClass.get()
+            buildArgs.add('--no-fallback')
+            buildArgs.add('-H:+ReportExceptionStackTraces')
+            buildArgs.add('--initialize-at-build-time=org.slf4j')
+            buildArgs.add('--initialize-at-build-time=ch.qos.logback')
+            buildArgs.add('--enable-https')
+            buildArgs.add('--enable-all-security-services')
+            // Configuration files will be picked up automatically from META-INF/native-image
+        }
+    }
+}
+
+
+tasks.named('wrapper') {
+    gradleVersion = '8.14.2'
+    distributionType = Wrapper.DistributionType.ALL
+}
