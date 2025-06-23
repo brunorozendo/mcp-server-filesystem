@@ -33,6 +33,5 @@
     <!-- Root logger -->
     <root level="${LOG_LEVEL}">
         <appender-ref ref="FILE" />
-        <!-- Uncomment the line below if you want console output -->
     </root>
 </configuration>

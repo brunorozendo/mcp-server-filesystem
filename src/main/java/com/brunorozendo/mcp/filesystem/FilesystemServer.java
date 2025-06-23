@@ -4,21 +4,25 @@ import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class FilesystemServer {
 
+    private static final Logger logger = LoggerFactory.getLogger(FilesystemServer.class);
+
     public static void main(String[] args) {
         if (args.length == 0) {
-            System.err.println("Usage: java -jar <jar-file> <allowed-directory> [additional-directories...]");
+            logger.info("Usage: java -jar <jar-file> <allowed-directory> [additional-directories...]");
             System.exit(1);
         }
 
         List<String> allowedDirs = Arrays.asList(args);
-        System.err.println("Secure MCP Filesystem Server starting...");
-        System.err.println("Allowed directories: " + allowedDirs);
+        logger.info("Secure MCP Filesystem Server starting...");
+        logger.info("Allowed directories: {}", allowedDirs);
 
         // The business logic for all tools and resources
         FileTools fileTools = new FileTools(allowedDirs);
@@ -66,6 +70,6 @@ public class FilesystemServer {
             .tool(ToolSchemas.LIST_ALLOWED_DIRECTORIES, fileTools::listAllowedDirectories)
             .build();
 
-        System.err.println("Server connected and running on stdio.");
+        logger.info("Server connected and running on stdio.");
     }
 }

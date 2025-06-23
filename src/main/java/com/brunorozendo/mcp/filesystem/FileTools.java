@@ -9,6 +9,8 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -28,6 +30,8 @@ import java.util.stream.Stream;
  * Contains the business logic for all filesystem-related tools and resources.
  */
 public class FileTools {
+
+    private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
 
     private final PathValidator pathValidator;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -63,7 +67,7 @@ public class FileTools {
                 registerDirectoryForWatching(path);
             }
         } catch (IOException e) {
-            System.err.println("Failed to initialize file watching: " + e.getMessage());
+            logger.error("Failed to initialize file watching: {}", e.getMessage());
         }
     }
 
@@ -157,7 +161,7 @@ public class FileTools {
                     }
                 }
             } catch (IOException e) {
-                System.err.println("Error in file watcher: " + e.getMessage());
+                logger.error("Error in file watcher: {}", e.getMessage());
             }
         });
     }
@@ -462,7 +466,7 @@ public class FileTools {
                         children.add(buildTree(child));
                     } catch (IOException e) {
                         // Skip files we can't read, but log it.
-                        System.err.println("Could not process path " + child + ": " + e.getMessage());
+                        logger.error("Could not process path {}: {}", child, e.getMessage());
                     }
                 });
             }
