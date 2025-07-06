@@ -256,9 +256,10 @@ public class FileTools {
 
     public CallToolResult readMultipleFiles(McpSyncServerExchange exchange, Map<String, Object> args) {
         return handleTool(exchange, args, (ex, toolArgs) -> {
-            Object pathsObject = toolArgs.get("paths");
             List<String> paths = List.of();
 
+            // Check if paths are provided in the args
+            Object pathsObject = toolArgs.get("paths");
             if (pathsObject instanceof List<?> pathList) {
                 paths = pathList.stream()
                         .filter(String.class::isInstance)
@@ -266,16 +267,43 @@ public class FileTools {
                         .toList();
             }
 
+            // If no paths provided, use all allowed directories
+            if (paths.isEmpty()) {
+                paths = pathValidator.getAllowedDirectoriesAsString();
+            }
+
             StringBuilder results = new StringBuilder();
             for (String pathStr : paths) {
                 try {
                     Path validPath = pathValidator.validate(pathStr);
-                    String content = Files.readString(validPath);
-                    results.append(pathStr).append(":\n").append(content).append("\n");
+                    if (Files.isDirectory(validPath)) {
+                        // If path is a directory, read all files in it
+                        try (Stream<Path> stream = Files.walk(validPath)) {
+                            List<Path> files = stream
+                                .filter(Files::isRegularFile)
+                                .collect(Collectors.toList());
+
+                            for (Path file : files) {
+                                try {
+                                    String content = Files.readString(file);
+                                    results.append(file.toString()).append(":\n").append(content).append("\n");
+                                    results.append("\n---\n");
+                                } catch (Exception e) {
+                                    results.append(file.toString()).append(": Error - ").append(e.getMessage()).append("\n");
+                                    results.append("\n---\n");
+                                }
+                            }
+                        }
+                    } else {
+                        // If path is a file, read it directly
+                        String content = Files.readString(validPath);
+                        results.append(pathStr).append(":\n").append(content).append("\n");
+                        results.append("\n---\n");
+                    }
                 } catch (Exception e) {
                     results.append(pathStr).append(": Error - ").append(e.getMessage()).append("\n");
+                    results.append("\n---\n");
                 }
-                results.append("\n---\n");
             }
             return new CallToolResult(results.toString(), false);
         });
@@ -311,6 +339,17 @@ public class FileTools {
     public CallToolResult listDirectory(McpSyncServerExchange exchange, Map<String, Object> args) {
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
+
+            // If no path provided, use the first allowed directory
+            if (pathStr == null || pathStr.isBlank()) {
+                List<String> allowedDirs = pathValidator.getAllowedDirectoriesAsString();
+                if (!allowedDirs.isEmpty()) {
+                    pathStr = allowedDirs.get(0);
+                } else {
+                    return new CallToolResult("No allowed directories configured", true);
+                }
+            }
+
             Path validPath = pathValidator.validate(pathStr);
             try (Stream<Path> stream = Files.list(validPath)) {
                 String formatted = stream
