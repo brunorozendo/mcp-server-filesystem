@@ -7,8 +7,12 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class FilesystemServer {
 
@@ -26,6 +30,28 @@ public class FilesystemServer {
 
         // The business logic for all tools and resources
         FileTools fileTools = new FileTools(allowedDirs);
+        
+        // Initialize the resource manager
+        PathValidator pathValidator = new PathValidator(allowedDirs);
+        ResourceManager resourceManager = new ResourceManager(pathValidator);
+
+        // Connect file tools with resource manager for file system event handling
+        fileTools.setResourceChangeCallback(uri -> {
+            // Extract path from URI
+            String pathStr = uri.substring("file://".length());
+            Path path = Paths.get(pathStr);
+            
+            // Determine the type of change and update resource manager
+            if (Files.exists(path)) {
+                if (Files.isRegularFile(path)) {
+                    resourceManager.onFileCreated(path);
+                } else {
+                    resourceManager.onFileModified(path);
+                }
+            } else {
+                resourceManager.onFileDeleted(path);
+            }
+        });
 
         // The transport provider for stdio
         StdioServerTransportProvider transportProvider = new StdioServerTransportProvider();
@@ -45,6 +71,13 @@ public class FilesystemServer {
             fileTools::readResource // Link to the handler method
         );
 
+        // Create a tool to list resources as a workaround
+        McpSchema.Tool listResourcesTool = new McpSchema.Tool(
+            "list_resources",
+            "List all available file resources that can be accessed via the resources API",
+            new McpSchema.JsonSchema("object", Map.of(), List.of(), false, null, null)
+        );
+
         // Build the synchronous MCP server
         McpServer.sync(transportProvider)
             .serverInfo("java-secure-filesystem-server", "0.7.1")
@@ -52,7 +85,7 @@ public class FilesystemServer {
             // The booleans indicate we support dynamic changes and subscriptions.
             .capabilities(McpSchema.ServerCapabilities.builder()
                 .tools(false)
-                .resources(true, true)
+                .resources(true, true) // listChanged support, subscription support
                 .build())
             // Register the resource handler
             .resources(resourceSpec)
@@ -68,8 +101,27 @@ public class FilesystemServer {
             .tool(ToolSchemas.SEARCH_FILES, fileTools::searchFiles)
             .tool(ToolSchemas.GET_FILE_INFO, fileTools::getFileInfo)
             .tool(ToolSchemas.LIST_ALLOWED_DIRECTORIES, fileTools::listAllowedDirectories)
+            // Add the list_resources tool
+            .tool(listResourcesTool, (exchange, toolArgs) -> {
+                // This is a workaround to expose resource listing via a tool
+                List<McpSchema.Resource> resources = resourceManager.getAllResources();
+                StringBuilder output = new StringBuilder();
+                output.append("Available Resources (").append(resources.size()).append(" total):\n\n");
+                
+                for (McpSchema.Resource resource : resources) {
+                    output.append("- URI: ").append(resource.uri()).append("\n");
+                    output.append("  Name: ").append(resource.name()).append("\n");
+                    output.append("  Type: ").append(resource.mimeType()).append("\n");
+                    output.append("  Description: ").append(resource.description()).append("\n\n");
+                }
+                
+                return new McpSchema.CallToolResult(output.toString(), false);
+            })
             .build();
 
         logger.info("Server connected and running on stdio.");
+        logger.info("Resources support: The server tracks {} resources", resourceManager.getResourceCount());
+        logger.info("Note: Full resources/list endpoint support requires MCP SDK update.");
+        logger.info("Use the 'list_resources' tool as a workaround to see available resources.");
     }
 }
