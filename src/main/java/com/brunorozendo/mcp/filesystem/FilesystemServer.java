@@ -75,12 +75,13 @@ public class FilesystemServer {
         McpSchema.Tool listResourcesTool = new McpSchema.Tool(
             "list_resources",
             "List all available file resources that can be accessed via the resources API",
-            new McpSchema.JsonSchema("object", Map.of(), List.of(), false, null, null)
+            new McpSchema.JsonSchema("object", Map.of(), List.of(), false, null, null),
+            null
         );
 
         // Build the synchronous MCP server
         McpServer.sync(transportProvider)
-            .serverInfo("java-secure-filesystem-server", "0.7.1")
+            .serverInfo("java-secure-filesystem-server", "0.7.2")
             // Announce that we support both tools AND resources.
             // The booleans indicate we support dynamic changes and subscriptions.
             .capabilities(McpSchema.ServerCapabilities.builder()

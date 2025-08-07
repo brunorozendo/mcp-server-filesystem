@@ -18,7 +18,8 @@ public final class ToolSchemas {
         "Handles various text encodings and provides detailed error messages " +
         "if the file cannot be read. Use this tool when you need to examine " +
         "the contents of a single file. Only works within allowed directories.",
-        createSinglePathSchema()
+        createSinglePathSchema(),
+        null
     );
 
     public static final McpSchema.Tool READ_MULTIPLE_FILES = new McpSchema.Tool(
@@ -28,7 +29,8 @@ public final class ToolSchemas {
         "or compare multiple files. Each file's content is returned with its " +
         "path as a reference. Failed reads for individual files won't stop " +
         "the entire operation. Only works within allowed directories.",
-        createMultiPathSchema()
+        createMultiPathSchema(),
+        null
     );
 
     public static final McpSchema.Tool WRITE_FILE = new McpSchema.Tool(
@@ -36,7 +38,8 @@ public final class ToolSchemas {
         "Create a new file or completely overwrite an existing file with new content. " +
         "Use with caution as it will overwrite existing files without warning. " +
         "Handles text content with proper encoding. Only works within allowed directories.",
-        createPathAndContentSchema()
+        createPathAndContentSchema(),
+        null
     );
 
     public static final McpSchema.Tool EDIT_FILE = new McpSchema.Tool(
@@ -44,7 +47,8 @@ public final class ToolSchemas {
         "Make line-based edits to a text file. Each edit replaces exact line sequences " +
         "with new content. Returns a git-style diff showing the changes made. " +
         "Only works within allowed directories.",
-        createEditFileSchema()
+        createEditFileSchema(),
+        null
     );
 
     public static final McpSchema.Tool CREATE_DIRECTORY = new McpSchema.Tool(
@@ -53,7 +57,8 @@ public final class ToolSchemas {
         "nested directories in one operation. If the directory already exists, " +
         "this operation will succeed silently. Perfect for setting up directory " +
         "structures for projects or ensuring required paths exist. Only works within allowed directories.",
-        createSinglePathSchema()
+        createSinglePathSchema(),
+        null
     );
 
     public static final McpSchema.Tool LIST_DIRECTORY = new McpSchema.Tool(
@@ -62,7 +67,8 @@ public final class ToolSchemas {
         "Results clearly distinguish between files and directories with [FILE] and [DIR] " +
         "prefixes. This tool is essential for understanding directory structure and " +
         "finding specific files within a directory. Only works within allowed directories.",
-        createSinglePathSchema()
+        createSinglePathSchema(),
+        null
     );
 
     public static final McpSchema.Tool DIRECTORY_TREE = new McpSchema.Tool(
@@ -71,7 +77,8 @@ public final class ToolSchemas {
         "Each entry includes 'name', 'type' (file/directory), and 'children' for directories. " +
         "Files have no children array, while directories always have a children array (which may be empty). " +
         "The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
-        createSinglePathSchema()
+        createSinglePathSchema(),
+        null
     );
 
     public static final McpSchema.Tool MOVE_FILE = new McpSchema.Tool(
@@ -80,7 +87,8 @@ public final class ToolSchemas {
         "and rename them in a single operation. If the destination exists, the " +
         "operation will fail. Works across different directories and can be used " +
         "for simple renaming within the same directory. Both source and destination must be within allowed directories.",
-        createSourceDestSchema()
+        createSourceDestSchema(),
+        null
     );
 
     public static final McpSchema.Tool SEARCH_FILES = new McpSchema.Tool(
@@ -90,7 +98,8 @@ public final class ToolSchemas {
         "like '*.java' or '*.{java,xml}'. Returns full paths to all " +
         "matching items. Great for finding files when you don't know their exact location. " +
         "Only searches within allowed directories.",
-        createSearchSchema()
+        createSearchSchema(),
+        null
     );
 
     public static final McpSchema.Tool GET_FILE_INFO = new McpSchema.Tool(
@@ -99,14 +108,16 @@ public final class ToolSchemas {
         "information including size, creation time, last modified time, permissions, " +
         "and type. This tool is perfect for understanding file characteristics " +
         "without reading the actual content. Only works within allowed directories.",
-        createSinglePathSchema()
+        createSinglePathSchema(),
+        null
     );
 
     public static final McpSchema.Tool LIST_ALLOWED_DIRECTORIES = new McpSchema.Tool(
         "list_allowed_directories",
         "Returns the list of directories that this server is allowed to access. " +
         "Use this to understand which directories are available before trying to access files.",
-        createEmptySchema()
+        createEmptySchema(),
+        null
     );
 
     private static McpSchema.JsonSchema createSinglePathSchema() {

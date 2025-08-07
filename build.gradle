@@ -7,12 +7,16 @@ plugins {
 }
 
 group = 'com.brunorozendo'
-version = '0.7.1' // Incremented version for dependency fix
+version = '0.7.2' // Incremented version for dependency fix
 
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+        vendor = JvmVendorSpec.GRAAL_VM
+    }
 }
 
 repositories {
@@ -21,7 +25,7 @@ repositories {
 
 dependencies {
     // The core MCP SDK for Java
-    implementation 'io.modelcontextprotocol.sdk:mcp:0.10.0'
+    implementation 'io.modelcontextprotocol.sdk:mcp:0.11.1'
 
     // A library for generating text diffs, using the correct Maven coordinates
     implementation 'io.github.java-diff-utils:java-diff-utils:4.12'
