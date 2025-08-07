@@ -29,7 +29,7 @@ In addition to tools, the server also supports MCP resources, allowing clients t
 
 ## Requirements
 
-- Java 17 or higher
+- Java 21 or higher
 - Gradle 8.x (for building from source)
 
 ## Installation
@@ -183,7 +183,7 @@ java-mcp-filesystem-server/
 
 1. **"Access denied" errors**: Ensure the path is within an allowed directory
 2. **"Path is outside of allowed directories"**: Check that you've included the parent directory in the server arguments
-3. **Server won't start**: Verify Java 17+ is installed and in your PATH
+3. **Server won't start**: Verify Java 21+ is installed and in your PATH
 
 ### Debugging
 
@@ -191,7 +191,7 @@ Enable verbose logging by modifying the server to include debug output, or check
 
 ## Version History
 
-- **0.7.1** - Current version with dependency fixes and full MCP tools support
+- **0.7.2** - Current version with dependency fixes and full MCP tools support
 - Previous versions available in git history
 
 ## Contributing
