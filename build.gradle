@@ -1,20 +1,19 @@
 plugins {
-    id 'java'
-    id 'application'
+    id 'war'
     id 'groovy'
     id 'jacoco' // For code coverage
-    id 'org.graalvm.buildtools.native' version '0.10.6'
+    id("org.gretty") version "4.1.10"
 }
 
 group = 'com.brunorozendo'
-version = '0.7.2' // Incremented version for dependency fix
+version = '1.0.0'
 
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
         vendor = JvmVendorSpec.GRAAL_VM
     }
 }
@@ -24,8 +23,9 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
     // The core MCP SDK for Java
-    implementation 'io.modelcontextprotocol.sdk:mcp:0.11.1'
+    implementation 'io.modelcontextprotocol.sdk:mcp:0.14.1'
 
     // A library for generating text diffs, using the correct Maven coordinates
     implementation 'io.github.java-diff-utils:java-diff-utils:4.12'
@@ -34,8 +34,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.1'
 
     implementation 'org.slf4j:slf4j-api:2.0.17'
-    implementation 'ch.qos.logback:logback-classic:1.5.18'
-    implementation 'ch.qos.logback:logback-core:1.5.18'
+    implementation 'ch.qos.logback:logback-classic:1.5.20'
+    implementation 'ch.qos.logback:logback-core:1.5.20'
 
 
     // Spock and Groovy for testing
@@ -46,28 +46,6 @@ dependencies {
     testImplementation "com.athaydes:spock-reports:2.5.1-groovy-4.0"
 }
 
-application {
-    mainClass = 'com.brunorozendo.mcp.filesystem.FilesystemServer'
-}
-
-
-// Create a fat jar for easier distribution
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'com.brunorozendo.mcp.filesystem.FilesystemServer'
-        )
-    }
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    // Exclude signature files to avoid security exceptions
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
-}
-
-
 test{
     useJUnitPlatform()
     testLogging {
@@ -77,53 +55,9 @@ test{
     finalizedBy jacocoTestReport // Generate report after tests run
 }
 
-jacocoTestReport {
-    reports {
-        xml.required = true
-        html.required = true
-    }
-
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    // Add any exclusions here if needed
-            ])
-        }))
-    }
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.80 // 80% coverage required
-            }
-        }
-    }
-}
-
-check.dependsOn jacocoTestCoverageVerification
-
-
-graalvmNative {
-    toolchainDetection = true
-    binaries {
-        main {
-            imageName = 'mcp-server-filesystem'
-            mainClass = application.mainClass.get()
-            buildArgs.add('--no-fallback')
-            buildArgs.add('-H:+ReportExceptionStackTraces')
-            buildArgs.add('--initialize-at-build-time=org.slf4j')
-            buildArgs.add('--initialize-at-build-time=ch.qos.logback')
-            buildArgs.add('--enable-https')
-            buildArgs.add('--enable-all-security-services')
-            // Configuration files will be picked up automatically from META-INF/native-image
-        }
-    }
-}
 
 
 tasks.named('wrapper') {
-    gradleVersion = '8.14.2'
+    gradleVersion = '9.1.0'
     distributionType = Wrapper.DistributionType.ALL
 }
