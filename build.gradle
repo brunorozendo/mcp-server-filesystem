@@ -1,8 +1,7 @@
 plugins {
     id 'war'
     id 'groovy'
-    id 'jacoco' // For code coverage
-    id("org.gretty") version "4.1.10"
+    id 'jacoco'
 }
 
 group = 'com.brunorozendo'
@@ -14,7 +13,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
-        vendor = JvmVendorSpec.GRAAL_VM
     }
 }
 
@@ -25,7 +23,7 @@ repositories {
 dependencies {
     compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
     // The core MCP SDK for Java
-    implementation 'io.modelcontextprotocol.sdk:mcp:0.14.1'
+    implementation 'io.modelcontextprotocol.sdk:mcp:0.15.0'
 
     // A library for generating text diffs, using the correct Maven coordinates
     implementation 'io.github.java-diff-utils:java-diff-utils:4.12'
