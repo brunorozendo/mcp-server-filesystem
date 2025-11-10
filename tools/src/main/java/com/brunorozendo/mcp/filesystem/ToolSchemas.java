@@ -122,15 +122,6 @@ public final class ToolSchemas {
         null,null,null
     );
 
-    public static final McpSchema.Tool LIST_ALLOWED_DIRECTORIES = new McpSchema.Tool(
-        "list_allowed_directories",
-        "list allowed directories",
-        "Returns the list of directories that this server is allowed to access. " +
-        "Use this to understand which directories are available before trying to access files.",
-        createEmptySchema(),
-        null,null,null
-    );
-
     private static McpSchema.JsonSchema createSinglePathSchema() {
         return new McpSchema.JsonSchema("object", Map.of("path", Map.of("type", "string")), List.of("path"), false, null, null);
     }
@@ -178,7 +169,4 @@ public final class ToolSchemas {
         ), List.of("path", "edits"), false, null, null);
     }
 
-    private static McpSchema.JsonSchema createEmptySchema() {
-        return new McpSchema.JsonSchema("object", Map.of(), List.of(), false, null, null);
-    }
 }

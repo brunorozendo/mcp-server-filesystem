@@ -94,7 +94,7 @@ fabric.properties
 ### Gradle ###
 .gradle
 **/build/
-!src/**/build/
+!http/src/**/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting

@@ -1,16 +1,16 @@
 # Java MCP Filesystem Server
 
-A secure Model Context Protocol (MCP) server implementation in Java that provides controlled filesystem access to AI assistants. This server enables AI models to safely read, write, and manipulate files within specified directories while preventing unauthorized access through path validation.
+A Model Context Protocol (MCP) server implementation in Java that provides filesystem access to AI assistants. This multi-module project offers three different transport mechanisms (stdio, HTTP, SSE) all sharing common business logic for file operations.
 
 ## Features
 
-### Security-First Design
-- **Path Validation**: All file operations are restricted to explicitly allowed directories
-- **Path Traversal Protection**: Prevents `../` attacks through path normalization and validation
-- **Symbolic Link Resolution**: Safely handles symbolic links by checking their real paths
+### Multiple Transport Options
+- **stdio**: Standalone application for command-line integration (Claude Desktop, etc.)
+- **HTTP**: Servlet-based implementation for HTTP communication
+- **SSE**: Server-Sent Events servlet for real-time streaming
 
 ### Comprehensive File Operations
-The server exposes 11 MCP tools for filesystem manipulation:
+The server exposes 10 MCP tools for filesystem manipulation:
 
 - **`read_file`**: Read the complete contents of a single file
 - **`read_multiple_files`**: Efficiently read multiple files in one operation
@@ -20,60 +20,57 @@ The server exposes 11 MCP tools for filesystem manipulation:
 - **`list_directory`**: List contents of a directory with type indicators
 - **`directory_tree`**: Get a recursive JSON tree view of directories
 - **`move_file`**: Move or rename files and directories
-- **`search_files`**: Recursively search for files matching patterns
+- **`search_files`**: Recursively search for files matching glob patterns
 - **`get_file_info`**: Retrieve detailed file metadata (size, timestamps, permissions)
-- **`list_allowed_directories`**: Show which directories the server can access
 
-### MCP Resources Support
-In addition to tools, the server also supports MCP resources, allowing clients to access file contents through `file://` URIs.
 
 ## Requirements
 
-- Java 21 or higher
+- Java 25
 - Gradle 8.x (for building from source)
+- Servlet container (Tomcat, Jetty, etc.) for HTTP/SSE modules
 
-## Installation
-
-### Option 1: Download Pre-built JAR
-
-Download the latest release JAR file from the releases page (if available).
-
-### Option 2: Build from Source
+## Building from Source
 
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd java-mcp-filesystem-server
+cd mcp-server-filesystem
 ```
 
-2. Build the project:
+2. Build all modules:
 ```bash
 ./gradlew clean build
 ```
 
-This creates a fat JAR with all dependencies at:
-```
-build/libs/filesystem-mcp-server-all.jar
+This creates the following artifacts:
+- **stdio**: `stdio/build/libs/stdio-1.0.0.jar` - Standalone application JAR
+- **http**: `http/build/libs/http-1.0.0.war` - HTTP servlet WAR file
+- **sse**: `sse/build/libs/sse-1.0.0.war` - SSE servlet WAR file
+- **tools**: `tools/build/libs/tools-1.0.0.jar` - Shared library JAR
+
+3. Build individual modules:
+```bash
+./gradlew :stdio:build
+./gradlew :http:build
+./gradlew :sse:build
 ```
 
 ## Usage
 
-### Running the Server
+### Option 1: stdio Transport (Standalone)
 
-The server requires at least one allowed directory as a command-line argument:
+The stdio transport uses stdin/stdout for communication. Note: The current implementation has `static void main()` which needs to be changed to `public static void main(String[] args)` to be executable.
+
+Run the standalone application:
 
 ```bash
-java -jar build/libs/filesystem-mcp-server-all.jar /path/to/allowed/directory [additional directories...]
+java -jar stdio/build/libs/stdio-1.0.0.jar
 ```
 
-Example with multiple directories:
-```bash
-java -jar build/libs/filesystem-mcp-server-all.jar /Users/myuser/documents /Users/myuser/projects
-```
+#### Configuring with Claude Desktop
 
-### Configuring with Claude Desktop
-
-To use this server with Claude Desktop, add it to your `claude_desktop_config.json`:
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
@@ -82,59 +79,100 @@ To use this server with Claude Desktop, add it to your `claude_desktop_config.js
       "command": "java",
       "args": [
         "-jar",
-        "/absolute/path/to/filesystem-mcp-server-all.jar",
-        "/Users/myuser/documents",
-        "/Users/myuser/projects"
+        "/absolute/path/to/stdio-1.0.0.jar"
       ]
     }
   }
 }
 ```
 
-### Configuring with Other MCP Clients
+### Option 2: HTTP Transport (Servlet)
 
-The server communicates over stdio (standard input/output), making it compatible with any MCP client that supports stdio transport. Provide the command and arguments as shown above.
+1. Deploy the WAR file to your servlet container:
+```bash
+cp http/build/libs/http-1.0.0.war $TOMCAT_HOME/webapps/
+```
 
-## Development
+2. The HTTP endpoint will be available at:
+```
+http://localhost:8080/http-1.0.0/mcp
+```
+
+### Option 3: SSE Transport (Servlet)
+
+1. Deploy the WAR file to your servlet container:
+```bash
+cp sse/build/libs/sse-1.0.0.war $TOMCAT_HOME/webapps/
+```
+
+2. The SSE endpoints will be available at:
+```
+SSE endpoint: http://localhost:8080/sse-1.0.0/sse
+Messages endpoint: http://localhost:8080/sse-1.0.0/messages
+```
+
+The servlet is mapped to `/sse`, `/messages`, `/sse/*`, and `/messages/*`.
+
+## Architecture
 
 ### Project Structure
 
 ```
-java-mcp-filesystem-server/
-├── src/main/java/com/brunorozendo/mcp/filesystem/
-│   ├── FilesystemServer.java    # Main server entry point
-│   ├── FileTools.java           # Business logic for all file operations
-│   ├── PathValidator.java       # Security component for path validation
-│   └── ToolSchemas.java         # MCP tool schema definitions
-├── build.gradle                 # Gradle build configuration
-└── README.md                    # This file
+mcp-server-filesystem/
+├── tools/                       # Shared library module
+│   └── src/main/java/com/brunorozendo/mcp/filesystem/
+│       ├── Transport.java       # Central MCP server configuration
+│       ├── FileTools.java       # Business logic for all file operations
+│       └── ToolSchemas.java     # MCP tool schema definitions
+├── stdio/                       # Standalone stdio transport
+│   └── src/main/java/com/brunorozendo/mcp/filesystem/
+│       └── FilesystemServer.java
+├── http/                        # HTTP servlet transport
+│   └── src/main/java/com/brunorozendo/mcp/filesystem/
+│       └── FilesystemServer.java
+├── sse/                         # SSE servlet transport
+│   └── src/main/java/com/brunorozendo/mcp/filesystem/
+│       └── FilesystemServer.java
+├── settings.gradle              # Multi-module configuration
+└── README.md
 ```
 
-### Building for Development
+### Module Dependencies
+
+- **tools** - Core library with all business logic
+- **stdio, http, sse** - Thin transport adapters that depend on tools
+
+### Development Commands
 
 ```bash
-# Run tests (if any)
+# Run all tests
 ./gradlew test
 
-# Build without running tests
+# Run tests for tools module
+./gradlew :tools:test
+
+# Build without tests
 ./gradlew build -x test
 
-# Create distribution archives
-./gradlew distZip distTar
+# Generate test coverage report
+./gradlew :tools:test jacocoTestReport
 ```
 
 ### Key Dependencies
 
-- `io.modelcontextprotocol.sdk:mcp:0.10.0` - MCP SDK for Java
-- `io.github.java-diff-utils:java-diff-utils:4.12` - For generating diffs in edit operations
-- `com.fasterxml.jackson.core:jackson-databind:2.15.2` - JSON processing
+- `io.modelcontextprotocol.sdk:mcp:0.15.0` - MCP SDK for Java
+- `jakarta.servlet:jakarta.servlet-api:6.1.0` - Servlet API
+- `io.github.java-diff-utils:java-diff-utils:4.12` - Diff generation for edit operations
+- `com.fasterxml.jackson.core:jackson-databind:2.19.1` - JSON processing
+- Spock Framework 2.4-M6-groovy-4.0 - Testing
 
 ## Security Considerations
 
-1. **Directory Access**: Only directories explicitly passed as arguments can be accessed
-2. **Path Validation**: Every path is validated before any operation
-3. **No Elevation**: The server runs with the same permissions as the user who starts it
-4. **Symbolic Links**: Resolved to their real paths to prevent escaping allowed directories
+**IMPORTANT**: This implementation has **no path validation** or directory restrictions. All filesystem operations are unrestricted and limited only by the permissions of the user running the server.
+
+1. **No Path Restrictions**: File operations can access any path the user has permissions for
+2. **User Permissions**: The server runs with the same permissions as the user who starts it
+3. **Production Use**: Consider implementing path validation before deploying in production environments
 
 ## Tool Examples
 
@@ -171,8 +209,8 @@ java-mcp-filesystem-server/
   "tool": "search_files",
   "parameters": {
     "path": "/Users/myuser/projects",
-    "pattern": ".java",
-    "excludePatterns": ["build", "target"]
+    "pattern": "*.java",
+    "excludePatterns": ["**/build/**", "**/target/**"]
   }
 }
 ```
@@ -181,26 +219,27 @@ java-mcp-filesystem-server/
 
 ### Common Issues
 
-1. **"Access denied" errors**: Ensure the path is within an allowed directory
-2. **"Path is outside of allowed directories"**: Check that you've included the parent directory in the server arguments
-3. **Server won't start**: Verify Java 21+ is installed and in your PATH
+1. **Server won't start**: Verify Java 25 is installed and in your PATH
+2. **WAR deployment fails**: Ensure your servlet container supports Jakarta Servlet API 6.1
+3. **Permission errors**: The server can only access files the running user has permissions for
 
 ### Debugging
 
-Enable verbose logging by modifying the server to include debug output, or check stderr for error messages.
+Check application logs (stdout/stderr for stdio, container logs for HTTP/SSE) for error messages.
 
 ## Version History
 
-- **0.7.2** - Current version with dependency fixes and full MCP tools support
-- Previous versions available in git history
+- **1.0.0** - Multi-module architecture with stdio, HTTP, and SSE transports
+- **0.7.2** - Previous version with single module implementation
 
 ## Contributing
 
 Contributions are welcome! Please ensure:
 1. Code follows Java naming conventions
-2. Security validations are maintained
-3. New tools include proper schema definitions
+2. New tools are added to the shared `tools` module
+3. Tool schemas are properly defined in `ToolSchemas.java`
 4. Changes are tested with an MCP client
+5. Tests are written using Spock Framework in the `tools` module
 
 ## License
 

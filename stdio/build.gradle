@@ -1,0 +1,41 @@
+plugins {
+    id 'application'
+}
+
+group = 'com.brunorozendo'
+version = '1.0.0'
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':tools')
+    implementation 'io.modelcontextprotocol.sdk:mcp:0.15.0'
+
+}
+
+// Create a fat jar for easier distribution
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.brunorozendo.mcp.filesystem.FilesystemServer'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    // Exclude signature files to avoid security exceptions
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+}

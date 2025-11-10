@@ -28,10 +28,10 @@ public class FileTools {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTools.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final static ObjectMapper objectMapper = new ObjectMapper();
 
 
-    private Mono<CallToolResult> handleTool(McpAsyncServerExchange exchange, Map<String, Object> args, ToolLogic logic) {
+    private static Mono<CallToolResult> handleTool(McpAsyncServerExchange exchange, Map<String, Object> args, ToolLogic logic) {
         try {
             return logic.execute(exchange, args);
         } catch (Exception e) {
@@ -47,8 +47,7 @@ public class FileTools {
     }
 
 
-
-    public Mono<CallToolResult> readFile(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> readFile(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         try {
             String pathStr = (String) args.get("path");
@@ -62,7 +61,7 @@ public class FileTools {
 
     }
 
-    public Mono<CallToolResult> readMultipleFiles(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> readMultipleFiles(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, toolArgs) -> {
             List<String> paths = List.of();
@@ -76,10 +75,7 @@ public class FileTools {
                         .toList();
             }
 
-            // If no paths provided, use all allowed directories
-//            if (paths.isEmpty()) {
-//                paths = pathValidator.getAllowedDirectoriesAsString();
-//            }
+
 
             StringBuilder results = new StringBuilder();
             for (String pathStr : paths) {
@@ -118,7 +114,7 @@ public class FileTools {
         });
     }
 
-    public Mono<CallToolResult> writeFile(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> writeFile(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
@@ -129,7 +125,7 @@ public class FileTools {
         });
     }
 
-    public Mono<CallToolResult> createDirectory(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> createDirectory(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
@@ -139,7 +135,7 @@ public class FileTools {
         });
     }
 
-    public Mono<CallToolResult> listDirectory(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> listDirectory(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
@@ -164,7 +160,7 @@ public class FileTools {
         });
     }
 
-    public Mono<CallToolResult> moveFile(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> moveFile(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, a) -> {
             String sourceStr = (String) a.get("source");
@@ -179,7 +175,7 @@ public class FileTools {
         });
     }
 
-    public Mono<CallToolResult> getFileInfo(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> getFileInfo(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
@@ -209,7 +205,7 @@ public class FileTools {
     }
 
 
-    public Mono<CallToolResult> searchFiles(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> searchFiles(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
@@ -257,7 +253,7 @@ public class FileTools {
         });
     }
 
-    private List<String> getOptionalStringList(McpSchema.CallToolRequest req) {
+    private static List<String> getOptionalStringList(McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         Object value = args.get("excludePatterns");
         if (value instanceof List<?> list) {
@@ -270,7 +266,7 @@ public class FileTools {
         return Collections.emptyList();
     }
 
-    public Mono<CallToolResult> directoryTree(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> directoryTree(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
@@ -281,7 +277,7 @@ public class FileTools {
         });
     }
 
-    private Map<String, Object> buildTree(Path currentPath) throws IOException {
+    private static Map<String, Object> buildTree(Path currentPath) throws IOException {
         Map<String, Object> entry = new LinkedHashMap<>();
         entry.put("name", currentPath.getFileName().toString());
         boolean isDir = Files.isDirectory(currentPath);
@@ -304,7 +300,7 @@ public class FileTools {
         return entry;
     }
 
-    public Mono<CallToolResult> editFile(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
+    public static Mono<CallToolResult> editFile(McpAsyncServerExchange exchange, McpSchema.CallToolRequest req) {
         Map<String, Object> args = req.arguments();
         return handleTool(exchange, args, (ex, a) -> {
             // Define local records for structured, type-safe argument handling.

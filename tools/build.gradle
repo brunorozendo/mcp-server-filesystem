@@ -1,5 +1,5 @@
 plugins {
-    id 'war'
+    id 'java'
     id 'groovy'
     id 'jacoco'
 }
@@ -21,9 +21,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+
     // The core MCP SDK for Java
     implementation 'io.modelcontextprotocol.sdk:mcp:0.15.0'
+
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
 
     // A library for generating text diffs, using the correct Maven coordinates
     implementation 'io.github.java-diff-utils:java-diff-utils:4.12'
@@ -51,11 +53,4 @@ test{
         events "FAILED","PASSED","SKIPPED"
     }
     finalizedBy jacocoTestReport // Generate report after tests run
-}
-
-
-
-tasks.named('wrapper') {
-    gradleVersion = '9.1.0'
-    distributionType = Wrapper.DistributionType.ALL
 }

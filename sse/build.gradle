@@ -1,0 +1,27 @@
+plugins {
+    id 'war'
+}
+
+group = 'com.brunorozendo'
+version = '1.0.0'
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':tools')
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
+    implementation 'io.modelcontextprotocol.sdk:mcp:0.15.0'
+
+}
+
