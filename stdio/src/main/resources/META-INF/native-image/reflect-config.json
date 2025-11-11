@@ -1,0 +1,917 @@
+[
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Annotated",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Annotations",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$AudioContent",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$BlobResourceContents",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CallToolRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CallToolRequest$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CallToolResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CallToolResult$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Elicitation",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$RootCapabilities",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ClientCapabilities$Sampling",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CompleteReference",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CompleteRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CompleteRequest$CompleteArgument",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CompleteRequest$CompleteContext",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CompleteResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CompleteResult$CompleteCompletion",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Content",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CreateMessageRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CreateMessageRequest$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CreateMessageRequest$ContextInclusionStrategy",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CreateMessageResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CreateMessageResult$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$CreateMessageResult$StopReason",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ElicitRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ElicitRequest$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ElicitResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ElicitResult$Action",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ElicitResult$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$EmbeddedResource",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ErrorCodes",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$GetPromptRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$GetPromptResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Identifier",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ImageContent",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Implementation",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$InitializeRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$InitializeResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$JSONRPCMessage",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$JSONRPCNotification",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$JSONRPCRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$JSONRPCResponse",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$JSONRPCResponse$JSONRPCError",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$JsonSchema",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ListPromptsResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ListResourceTemplatesResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ListResourcesResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ListRootsResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ListToolsResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$LoggingLevel",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$LoggingMessageNotification",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$LoggingMessageNotification$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Meta",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ModelHint",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ModelPreferences",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ModelPreferences$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Notification",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$PaginatedRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$PaginatedResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ProgressNotification",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Prompt",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$PromptArgument",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$PromptMessage",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$PromptReference",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ReadResourceRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ReadResourceResult",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Request",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Resource",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Resource$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ResourceContent",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ResourceContents",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ResourceLink",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ResourceLink$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ResourceReference",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ResourceTemplate",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ResourceTemplate$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ResourcesUpdatedNotification",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Result",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Role",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Root",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$SamplingMessage",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$CompletionCapabilities",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$LoggingCapabilities",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$PromptCapabilities",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$ResourceCapabilities",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ServerCapabilities$ToolCapabilities",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$SetLevelRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$SubscribeRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$TextContent",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$TextResourceContents",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Tool",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$Tool$Builder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$ToolAnnotations",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "io.modelcontextprotocol.spec.McpSchema$UnsubscribeRequest",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "ch.qos.logback.core.rolling.TimeBasedRollingPolicy",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "ch.qos.logback.core.rolling.RollingFileAppender",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  },
+  {
+    "name": "ch.qos.logback.classic.encoder.PatternLayoutEncoder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true
+  }
+]

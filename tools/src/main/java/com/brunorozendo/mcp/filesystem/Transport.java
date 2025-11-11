@@ -25,8 +25,9 @@ public class Transport {
         return server
                 .serverInfo("file-reader-server", "1.0.0")
                 .capabilities(McpSchema.ServerCapabilities.builder()
-                        .tools(true)
-                        .resources(false, true)
+                        .tools(false)
+                        .resources(false, false)
+                        .logging()
                         .build())
                 .toolCall(ToolSchemas.READ_FILE, FileTools::readFile)
                 .toolCall(ToolSchemas.READ_MULTIPLE_FILES, FileTools::readMultipleFiles)
