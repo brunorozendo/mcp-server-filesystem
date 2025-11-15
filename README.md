@@ -27,7 +27,7 @@ The server exposes 10 MCP tools for filesystem manipulation:
 ## Requirements
 
 - Java 25
-- Gradle 8.x (for building from source)
+- Gradle 9.x (for building from source)
 - Servlet container (Tomcat, Jetty, etc.) for HTTP/SSE modules
 - GraalVM (optional, for native image compilation)
 
@@ -62,17 +62,13 @@ This creates the following artifacts:
 ./gradlew :stdio:nativeCompile
 ```
 
-The native executable will be created at `stdio/build/native/nativeCompile/stdio` and offers faster startup times and lower memory footprint.
+The native executable will be created at `stdio/build/native/nativeCompile/mcp-server-filesystem` and offers faster startup times and lower memory footprint.
 
 ## Usage
 
 ### Option 1: stdio Transport (Standalone)
 
 The stdio transport uses stdin/stdout for communication.
-
-**IMPORTANT BUG**: The current implementation has `static void main()` instead of `public static void main(String[] args)`, preventing execution. This must be fixed before the JAR will run.
-
-Run the standalone application (after fixing the bug):
 
 ```bash
 java -jar stdio/build/libs/stdio-1.0.0.jar
@@ -114,8 +110,8 @@ cp http/build/libs/http-1.0.0.war $TOMCAT_HOME/webapps/
 http://localhost:8080/v1/mcp
 ```
 
-3. Setup tomcat host
-```xml
+3. Setup tomcat `server.xml`
+```xml server.xml
 <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
     <Context path="/v1" docBase="http-1.0.0.war" reloadable="true" />
 </Host>
@@ -133,38 +129,13 @@ SSE endpoint: http://localhost:8080/v2/sse
 Messages endpoint: http://localhost:8080/v2/messages
 ```
 
-3. Setup tomcat host
+3. Setup tomcat `server.xml`
 ```xml
 <Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
     <Context path="/v2" docBase="sse-1.0.0.war" reloadable="true" />
 </Host>
 ```
 
-## Architecture
-
-### Project Structure
-
-```
-mcp-server-filesystem/
-├── tools/                       # Shared library module
-│   └── src/main/java/com/brunorozendo/mcp/filesystem/
-│       ├── Transport.java       # Central MCP server configuration
-│       ├── FileTools.java       # Business logic for all file operations
-│       └── ToolSchemas.java     # MCP tool schema definitions
-├── stdio/                       # Standalone stdio transport
-│   └── src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java
-├── http/                        # HTTP servlet transport
-│   └── src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java
-├── sse/                         # SSE servlet transport
-│   └── src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java
-├── settings.gradle              # Multi-module configuration
-└── README.md
-```
-
-### Module Dependencies
-
-- **tools** - Core library with all business logic
-- **stdio, http, sse** - Thin transport adapters that depend on tools
 
 ### Development Commands
 
@@ -246,10 +217,8 @@ mcp-server-filesystem/
 ### Common Issues
 
 1. **Server won't start**: Verify Java 25 is installed and in your PATH
-2. **stdio JAR won't execute**: The main method signature is incorrect (`static void main()` instead of `public static void main(String[] args)`). This must be fixed in the source code.
-3. **Tools not working**: There's a bug in `Transport.java:28` where capabilities are set to `tools(false)`. This must be changed to `tools(true)`.
-4. **WAR deployment fails**: Ensure your servlet container supports Jakarta Servlet API 6.1
-5. **Permission errors**: The server can only access files the running user has permissions for
+2. **WAR deployment fails**: Ensure your servlet container supports Jakarta Servlet API 6.1
+3**Permission errors**: The server can only access files the running user has permissions for
 
 ### Debugging
 
