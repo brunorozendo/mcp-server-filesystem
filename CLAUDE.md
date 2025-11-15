@@ -33,6 +33,9 @@ This is a **multi-module Gradle project** with four modules:
 ./gradlew :http:build
 ./gradlew :sse:build
 ./gradlew :tools:build
+
+# Build native executable (stdio module with GraalVM)
+./gradlew :stdio:nativeCompile
 ```
 
 ### Testing
@@ -68,7 +71,7 @@ The project follows a **shared library pattern** where the `tools` module contai
     - `getMcp(HttpServletSseServerTransportProvider)` - SSE transport
   - Single `buildMcpServer()` method registers all 10 tools with their handlers
   - Server info: name="file-reader-server", version="1.0.0"
-  - Server capabilities: `tools=true`, `resources(false, true)` (resources disabled, subscriptions enabled)
+  - Server capabilities: is correct, `tools=false` indicate that the list of available tools is fixed and will not grow or decrease, this MCP server does not provide `resources` therefore `resources(false, false)`  indicate the there is no option to subscribe to resources and the list of resources is fixed and will nor grow or decrease.
   - Located at: `tools/src/main/java/com/brunorozendo/mcp/filesystem/Transport.java`
 
 - **`FileTools.java`** - All filesystem operation business logic
@@ -79,14 +82,14 @@ The project follows a **shared library pattern** where the `tools` module contai
   - **No path validation** - filesystem operations have no directory restrictions
 
 - **`ToolSchemas.java`** - MCP tool schema definitions
-  - Defines 11 tool schemas using `McpSchema.Tool` and `McpSchema.JsonSchema` (10 registered + 1 unregistered)
+  - Defines 10 tool schemas using `McpSchema.Tool` and `McpSchema.JsonSchema`
   - Each tool has: name, display name, description, input schema
   - Schema helper methods: `createSinglePathSchema()`, `createMultiPathSchema()`, `createEditFileSchema()`, etc.
-  - Note: `LIST_ALLOWED_DIRECTORIES` tool schema is defined but NOT registered in Transport.buildMcpServer()
+  - Note: Tool descriptions mention "allowed directories" but no path validation exists in the implementation
 
 **Transport Implementations**:
 
-1. **stdio module** (`stdio/src/main/java/.../FilesystemServer.java`)
+1. **stdio module** (`stdio/src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java`)
    - Standalone Java application with `static void main()` method
    - **BUG**: Method signature is `static void main()` instead of `public static void main(String[] args)` - won't execute
    - Uses `StdioServerTransportProvider` with `JacksonMcpJsonMapper` for stdin/stdout communication
@@ -94,7 +97,7 @@ The project follows a **shared library pattern** where the `tools` module contai
    - Build configuration creates fat JAR with manifest Main-Class attribute
    - Usage (after fixing main): `java -jar stdio-1.0.0.jar`
 
-2. **http module** (`http/src/main/java/.../FilesystemServer.java`)
+2. **http module** (`http/src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java`)
    - Servlet extending `HttpServlet` with `@WebServlet` annotation
    - Mapped to `/mcp`, `/mcp/*` with `asyncSupported = true`
    - Uses `HttpServletStreamableServerTransportProvider` built with:
@@ -104,16 +107,22 @@ The project follows a **shared library pattern** where the `tools` module contai
    - Has unused `doGet()` override that calls `super.doGet()`
    - Requires servlet container (Tomcat, Jetty, etc.)
 
-3. **sse module** (`sse/src/main/java/.../FilesystemServer.java`)
+3. **sse module** (`sse/src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java`)
    - Servlet extending `HttpServlet` with `@WebServlet` annotation
    - Mapped to `/sse`, `/messages`, `/sse/*`, `/messages/*` with `asyncSupported = true`
    - Uses `HttpServletSseServerTransportProvider` built with:
      - `.sseEndpoint("/sse")`
-     - `.messageEndpoint("/v2/messages")`
+     - `.messageEndpoint("/v2/messages")` (servlet accepts both `/messages` and `/v2/messages` patterns)
      - `.jsonMapper(new JacksonMcpJsonMapper(new ObjectMapper()))`
    - Initializes in `init()` method, delegates to `transportProvider.service(req, resp)` in `service()`
    - No unused method overrides
    - Requires servlet container (Tomcat, Jetty, etc.)
+
+    Note:  `/messages` and `/v2/messages` patterns, the correct path is `/messages`, 
+but this project is running inside a single instace of Tomcat, that means it is running `http` and `sse` at the same times,
+therefore is necessary to setup two different context (each application) `v1` for `http` and `v2` for `sse`. the `.messageEndpoint("/v2/messages")` requires the full path.
+    
+
 
 ### Key Implementation Details
 
@@ -121,7 +130,7 @@ The project follows a **shared library pattern** where the `tools` module contai
 
 **Error Handling**:
 - The `handleTool()` wrapper in FileTools catches exceptions and converts them to `CallToolResult` with `isError=true`
-- Note: `readFile()` handles its own exceptions directly without using `handleTool()`
+- Note: `readFile()` handles its own exceptions directly without using `handleTool()` - only catches `IOException`, not all exceptions
 
 **Edit File Tool**:
 - Uses java-diff-utils (`com.github.difflib`) to generate unified diffs
@@ -175,9 +184,9 @@ Tests are in the `tools` module using Spock Framework (Groovy-based BDD):
 
 ## Available Tools
 
-The server exposes **10 registered tools**. Note: An 11th tool (`list_allowed_directories`) is defined in ToolSchemas.java but NOT registered in Transport.java, so it's unavailable to clients.
+The server exposes **10 registered tools**
 
-### Registered Tools (Available to Clients)
+### Registered Tools
 
 1. **read_file** - Read complete contents of a single file
    - Parameters: `path` (string)

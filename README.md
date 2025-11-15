@@ -29,6 +29,7 @@ The server exposes 10 MCP tools for filesystem manipulation:
 - Java 25
 - Gradle 8.x (for building from source)
 - Servlet container (Tomcat, Jetty, etc.) for HTTP/SSE modules
+- GraalVM (optional, for native image compilation)
 
 ## Building from Source
 
@@ -56,16 +57,31 @@ This creates the following artifacts:
 ./gradlew :sse:build
 ```
 
+4. Build native executable (optional, requires GraalVM):
+```bash
+./gradlew :stdio:nativeCompile
+```
+
+The native executable will be created at `stdio/build/native/nativeCompile/stdio` and offers faster startup times and lower memory footprint.
+
 ## Usage
 
 ### Option 1: stdio Transport (Standalone)
 
-The stdio transport uses stdin/stdout for communication. Note: The current implementation has `static void main()` which needs to be changed to `public static void main(String[] args)` to be executable.
+The stdio transport uses stdin/stdout for communication.
 
-Run the standalone application:
+**IMPORTANT BUG**: The current implementation has `static void main()` instead of `public static void main(String[] args)`, preventing execution. This must be fixed before the JAR will run.
+
+Run the standalone application (after fixing the bug):
 
 ```bash
 java -jar stdio/build/libs/stdio-1.0.0.jar
+```
+
+Or run the native executable (if built with GraalVM):
+
+```bash
+./stdio/build/native/nativeCompile/mcp-server-filesystem
 ```
 
 #### Configuring with Claude Desktop
@@ -95,9 +111,15 @@ cp http/build/libs/http-1.0.0.war $TOMCAT_HOME/webapps/
 
 2. The HTTP endpoint will be available at:
 ```
-http://localhost:8080/http-1.0.0/mcp
+http://localhost:8080/v1/mcp
 ```
 
+3. Setup tomcat host
+```xml
+<Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
+    <Context path="/v1" docBase="http-1.0.0.war" reloadable="true" />
+</Host>
+```
 ### Option 3: SSE Transport (Servlet)
 
 1. Deploy the WAR file to your servlet container:
@@ -107,11 +129,16 @@ cp sse/build/libs/sse-1.0.0.war $TOMCAT_HOME/webapps/
 
 2. The SSE endpoints will be available at:
 ```
-SSE endpoint: http://localhost:8080/sse-1.0.0/sse
-Messages endpoint: http://localhost:8080/sse-1.0.0/messages
+SSE endpoint: http://localhost:8080/v2/sse
+Messages endpoint: http://localhost:8080/v2/messages
 ```
 
-The servlet is mapped to `/sse`, `/messages`, `/sse/*`, and `/messages/*`.
+3. Setup tomcat host
+```xml
+<Host name="localhost" appBase="webapps" unpackWARs="true" autoDeploy="true">
+    <Context path="/v2" docBase="sse-1.0.0.war" reloadable="true" />
+</Host>
+```
 
 ## Architecture
 
@@ -125,14 +152,11 @@ mcp-server-filesystem/
 │       ├── FileTools.java       # Business logic for all file operations
 │       └── ToolSchemas.java     # MCP tool schema definitions
 ├── stdio/                       # Standalone stdio transport
-│   └── src/main/java/com/brunorozendo/mcp/filesystem/
-│       └── FilesystemServer.java
+│   └── src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java
 ├── http/                        # HTTP servlet transport
-│   └── src/main/java/com/brunorozendo/mcp/filesystem/
-│       └── FilesystemServer.java
+│   └── src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java
 ├── sse/                         # SSE servlet transport
-│   └── src/main/java/com/brunorozendo/mcp/filesystem/
-│       └── FilesystemServer.java
+│   └── src/main/java/com/brunorozendo/mcp/filesystem/FilesystemServer.java
 ├── settings.gradle              # Multi-module configuration
 └── README.md
 ```
@@ -173,6 +197,8 @@ mcp-server-filesystem/
 1. **No Path Restrictions**: File operations can access any path the user has permissions for
 2. **User Permissions**: The server runs with the same permissions as the user who starts it
 3. **Production Use**: Consider implementing path validation before deploying in production environments
+
+**Note**: Tool schema descriptions reference "allowed directories" but this feature does not exist in the current implementation.
 
 ## Tool Examples
 
@@ -220,8 +246,10 @@ mcp-server-filesystem/
 ### Common Issues
 
 1. **Server won't start**: Verify Java 25 is installed and in your PATH
-2. **WAR deployment fails**: Ensure your servlet container supports Jakarta Servlet API 6.1
-3. **Permission errors**: The server can only access files the running user has permissions for
+2. **stdio JAR won't execute**: The main method signature is incorrect (`static void main()` instead of `public static void main(String[] args)`). This must be fixed in the source code.
+3. **Tools not working**: There's a bug in `Transport.java:28` where capabilities are set to `tools(false)`. This must be changed to `tools(true)`.
+4. **WAR deployment fails**: Ensure your servlet container supports Jakarta Servlet API 6.1
+5. **Permission errors**: The server can only access files the running user has permissions for
 
 ### Debugging
 
