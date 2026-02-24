@@ -1,7 +1,6 @@
 package com.brunorozendo.mcp.filesystem
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper
+import io.modelcontextprotocol.json.McpJsonDefaults
 import io.modelcontextprotocol.json.TypeRef
 import io.modelcontextprotocol.server.McpAsyncServerExchange
 import io.modelcontextprotocol.spec.McpSchema
@@ -17,7 +16,7 @@ class FileToolsSpec extends Specification {
     @TempDir
     Path tempDir
 
-    static JacksonMcpJsonMapper jsonMapper = new JacksonMcpJsonMapper(new ObjectMapper())
+    static def jsonMapper = McpJsonDefaults.getMapper()
 
     // Helper method to create CallToolRequest using JsonMapper for Groovy-Record compatibility
     private static McpSchema.CallToolRequest createRequest(Map<String, Object> args) {

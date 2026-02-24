@@ -35,7 +35,7 @@ public class FileTools {
         try {
             return logic.execute(exchange, args);
         } catch (Exception e) {
-            return Mono.just(new CallToolResult("Error: " + e.getMessage(), true));
+            return Mono.just(CallToolResult.builder().textContent(List.of("Error: " + e.getMessage())).isError(true).build());
         }
     }
 
@@ -53,9 +53,9 @@ public class FileTools {
             String pathStr = (String) args.get("path");
             Path validPath = Path.of(pathStr);
             String content = Files.readString(validPath);
-            return Mono.just(new CallToolResult(content, false));
+            return Mono.just(CallToolResult.builder().textContent(List.of(content)).build());
         } catch (IOException e) {
-            return Mono.just(new CallToolResult(e.getMessage(), true));
+            return Mono.just(CallToolResult.builder().textContent(List.of(e.getMessage())).isError(true).build());
         }
 
 
@@ -110,7 +110,7 @@ public class FileTools {
                     results.append("\n---\n");
                 }
             }
-            return Mono.just(new CallToolResult(results.toString(), false));
+            return Mono.just(CallToolResult.builder().textContent(List.of(results.toString())).build());
         });
     }
 
@@ -121,7 +121,7 @@ public class FileTools {
             String content = (String) a.get("content");
             Path validPath = Path.of(pathStr);
             Files.writeString(validPath, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            return Mono.just(new CallToolResult("Successfully wrote to " + pathStr, false));
+            return Mono.just(CallToolResult.builder().textContent(List.of("Successfully wrote to " + pathStr)).build());
         });
     }
 
@@ -131,7 +131,7 @@ public class FileTools {
             String pathStr = (String) a.get("path");
             Path validPath = Path.of(pathStr);
             Files.createDirectories(validPath);
-            return Mono.just(new CallToolResult("Successfully created directory " + pathStr, false));
+            return Mono.just(CallToolResult.builder().textContent(List.of("Successfully created directory " + pathStr)).build());
         });
     }
 
@@ -140,22 +140,12 @@ public class FileTools {
         return handleTool(exchange, args, (ex, a) -> {
             String pathStr = (String) a.get("path");
 
-            // If no path provided, use the first allowed directory
-//            if (pathStr == null || pathStr.isBlank()) {
-//                List<String> allowedDirs = pathValidator.getAllowedDirectoriesAsString();
-//                if (!allowedDirs.isEmpty()) {
-//                    pathStr = allowedDirs.get(0);
-//                } else {
-//                    return Mono.just(new CallToolResult("No allowed directories configured", true));
-//                }
-//            }
-
             Path validPath = Path.of(pathStr);
             try (Stream<Path> stream = Files.list(validPath)) {
                 String formatted = stream
                     .map(p -> (Files.isDirectory(p) ? "[DIR] " : "[FILE] ") + p.getFileName().toString())
                     .collect(Collectors.joining("\n"));
-                return Mono.just(new CallToolResult(formatted, false));
+                return Mono.just(CallToolResult.builder().textContent(List.of(formatted)).build());
             }
         });
     }
@@ -171,7 +161,7 @@ public class FileTools {
             // Move the file
             Files.move(validSource, validDest);
 
-            return Mono.just(new CallToolResult("Successfully moved " + sourceStr + " to " + destStr, false));
+            return Mono.just(CallToolResult.builder().textContent(List.of("Successfully moved " + sourceStr + " to " + destStr)).build());
         });
     }
 
@@ -200,7 +190,7 @@ public class FileTools {
                 stats.isRegularFile(),
                 permissions
             );
-            return Mono.just(new CallToolResult(info, false));
+            return Mono.just(CallToolResult.builder().textContent(List.of(info)).build());
         });
     }
 
@@ -249,7 +239,7 @@ public class FileTools {
             });
 
             String output = results.isEmpty() ? "No matches found" : String.join("\n", results);
-            return Mono.just(new CallToolResult(output, false));
+            return Mono.just(CallToolResult.builder().textContent(List.of(output)).build());
         });
     }
 
@@ -273,7 +263,7 @@ public class FileTools {
             Path startPath = Path.of(pathStr);
             Map<String, Object> tree = buildTree(startPath);
             String jsonTree = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tree);
-            return Mono.just(new CallToolResult(jsonTree, false));
+            return Mono.just(CallToolResult.builder().textContent(List.of(jsonTree)).build());
         });
     }
 
@@ -346,7 +336,7 @@ public class FileTools {
                 Files.writeString(validPath, modifiedContent);
             }
 
-            return Mono.just(new CallToolResult(resultMessage, false));
+            return Mono.just(CallToolResult.builder().textContent(List.of(resultMessage)).build());
         });
     }
 }

@@ -1,7 +1,6 @@
 package com.brunorozendo.mcp.filesystem;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
+import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,7 +20,7 @@ public class FilesystemServer extends HttpServlet {
         try {
             transportProvider = HttpServletStreamableServerTransportProvider.builder()
                     .mcpEndpoint("/mcp")
-                    .jsonMapper(new JacksonMcpJsonMapper(new ObjectMapper()))
+                    .jsonMapper(McpJsonDefaults.getMapper())
                     .build();
             Transport.getMcp(transportProvider).build();
         } catch (Exception e) {

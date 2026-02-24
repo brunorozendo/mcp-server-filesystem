@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     implementation project(':tools')
-    implementation 'io.modelcontextprotocol.sdk:mcp:0.15.0'
+    implementation 'io.modelcontextprotocol.sdk:mcp:1.0.0'
 
 }
 

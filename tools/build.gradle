@@ -23,7 +23,7 @@ repositories {
 dependencies {
 
     // The core MCP SDK for Java
-    implementation 'io.modelcontextprotocol.sdk:mcp:0.15.0'
+    implementation 'io.modelcontextprotocol.sdk:mcp:1.0.0'
 
     compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
     testImplementation 'jakarta.servlet:jakarta.servlet-api:6.1.0'
